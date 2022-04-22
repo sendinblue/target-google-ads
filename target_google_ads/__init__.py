@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
+import argparse
 import io
+import json
 import logging
 import sys
 import threading
 
 import singer
-from singer import utils
-from target_google_ads.google_ads_client import GoogleAdsClient
-from target_google_ads.utils import emit_state
+import target_google_ads.google_ads_offline_conversion as google_ads_offline_conversion
+from google.ads.googleads.errors import GoogleAdsException
+from target_google_ads.google_ads_handler import GoogleAdsHandler
+from target_google_ads.utils import emit_state, send_usage_stats
 
 LOGGER = singer.get_logger()
 
@@ -18,35 +21,54 @@ REQUIRED_CONFIG_KEYS = [
     "refresh_token",
     "customer_ids",
     "developer_token",
-    "version",
-    "custom_variable_id",
-    "click_conversion_type",
-    "currency_code"
+    "api_version",
+    "offline_conversion",
 ]
 
 
-def main_impl():
-    args = utils.parse_args(REQUIRED_CONFIG_KEYS)
+def check_mandatory_config(config: dict) -> bool:
 
+    for customer_id in config["customer_ids"]:
+        if "conversion_action_ids" not in customer_id:
+            raise Exception(f"A conversion_action_ids field is missing for {customer_id} in customer_ids config.")
+        elif "customer_id" not in customer_id:
+            raise Exception(f"A customer_id field is missing for {customer_id} in customer_ids config.")
+
+    return True
+
+
+def main_impl(config):
     LOGGER.info(f"Checking required config.")
-    singer.utils.check_config(args.config, REQUIRED_CONFIG_KEYS)
+    singer.utils.check_config(config, REQUIRED_CONFIG_KEYS)
 
-    client = GoogleAdsClient(args.config)
+    customers = config["customer_ids"]
+    conversion_handler = getattr(
+        google_ads_offline_conversion, config["offline_conversion"]
+    )
 
-    if not args.config.get('disable_collection', False):
-        LOGGER.info('Sending version information to singer.io. ' +
-                    'To disable sending anonymous usage data, set ' +
-                    'the config parameter "disable_collection" to true')
-        threading.Thread(target=client.send_usage_stats).start()
-
-    LOGGER.info(f"Sync writing to google-ads api {args.config['version']} version.")
-    tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    state = client.writes_messages(tap_stream)
-
+    LOGGER.info(f"Sync writing to google-ads api {config['api_version']} version.")
+    tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+    for customer in customers:
+        LOGGER.debug(f"Customer config : {customers}")
+        client = GoogleAdsHandler(config)
+        state = client.writes_messages(customer=customer, tap_stream=tap_stream, conversion_handler=conversion_handler)
     # write a state file
     emit_state(state)
 
     LOGGER.info("Sync Completed")
+
+
+def parse_config():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', help='Config file')
+    args = parser.parse_args()
+
+    if args.config:
+        with open(args.config) as input:
+            config = json.load(input)
+    else:
+        config = {}
+    return config
 
 
 def main():
@@ -55,7 +77,17 @@ def main():
     google_logger.setLevel(level=logging.CRITICAL)
 
     try:
-        main_impl()
+        config = parse_config()
+
+        if not config.get("disable_collection", False):
+            LOGGER.info(
+                "Sending version information to singer.io. "
+                + "To disable sending anonymous usage data, set "
+                + 'the config parameter "disable_collection" to true'
+            )
+            threading.Thread(target=send_usage_stats).start()
+
+        main_impl(config)
     except Exception as e:
         for line in str(e).splitlines():
             LOGGER.critical(line)
@@ -63,4 +95,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except GoogleAdsException as ex:
+        LOGGER.error(
+            f'Request with ID "{ex.request_id}" failed with status '
+            f'"{ex.error.code().name}" and includes the following errors:'
+        )
+
+        for error in ex.failure.errors:
+            LOGGER.error(f'\tError with message "{error.message}".')
+            if error.location:
+                for field_path_element in error.location.field_path_elements:
+                    LOGGER.error(f"\t\tOn field: {field_path_element.field_name}")

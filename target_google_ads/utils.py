@@ -1,11 +1,15 @@
+import http
 import json
+import math
 import os
 import sys
-import singer
+import urllib
 from decimal import Decimal
-import decimal
 
-logger = singer.get_logger()
+import pkg_resources
+import singer
+
+LOGGER = singer.get_logger()
 
 
 def emit_state(state):
@@ -15,36 +19,36 @@ def emit_state(state):
     """
     if state is not None:
         line = json.dumps(state)
-        logger.debug('Emitting state {}'.format(line))
+        LOGGER.debug("Emitting state {}".format(line))
         sys.stdout.write("{}\n".format(line))
         sys.stdout.flush()
 
 
-def float_to_decimal(value):
-    '''
-    Walk the given data structure and turn all instances of float
-    into double.
-    '''
-    if isinstance(value, float):
-        return Decimal(str(value))
+def decimal_to_float(value):
+    """
+    Walk the given data structure and turn all instances of double
+    into float.
+    """
+    if isinstance(value, Decimal):
+        return float(str(value))
     if isinstance(value, list):
-        return [float_to_decimal(child) for child in value]
+        return [decimal_to_float(child) for child in value]
     if isinstance(value, dict):
-        return {k: float_to_decimal(v) for k, v in value.items()}
+        return {k: decimal_to_float(v) for k, v in value.items()}
     return value
 
 
 def numeric_schema_with_precision(schema):
-    if 'type' not in schema:
+    if "type" not in schema:
         return False
-    if isinstance(schema['type'], list):
-        if 'number' not in schema['type']:
+    if isinstance(schema["type"], list):
+        if "number" not in schema["type"]:
             return False
-    elif schema['type'] != 'number':
+    elif schema["type"] != "number":
         return False
-    if 'multipleOf' in schema:
+    if "multipleOf" in schema:
         return True
-    return 'minimum' in schema or 'maximum' in schema
+    return "minimum" in schema or "maximum" in schema
 
 
 def get_precision(key, schema):
@@ -60,12 +64,36 @@ def walk_schema_for_numeric_precision(schema):
             walk_schema_for_numeric_precision(v)
     elif isinstance(schema, dict):
         if numeric_schema_with_precision(schema):
-            scale = -1 * get_precision('multipleOf', schema)
-            digits = max(get_precision('minimum', schema), get_precision('maximum', schema))
+            scale = -1 * get_precision("multipleOf", schema)
+            digits = max(
+                get_precision("minimum", schema), get_precision("maximum", schema)
+            )
             precision = digits + scale
             if decimal.getcontext().prec < precision:
-                logger.debug('Setting decimal precision to {}'.format(precision))
+                LOGGER.debug("Setting decimal precision to {}".format(precision))
                 decimal.getcontext().prec = precision
         else:
             for v in schema.values():
                 walk_schema_for_numeric_precision(v)
+
+
+def send_usage_stats():
+    """
+    Send anonymous usage data to singer.io
+    """
+    try:
+        version = pkg_resources.get_distribution("target-rest-api").version
+        conn = http.client.HTTPConnection("collector.singer.io", timeout=10)
+        conn.connect()
+        params = {
+            "e": "se",
+            "aid": "singer",
+            "se_ca": "target-rest-api",
+            "se_ac": "open",
+            "se_la": version,
+        }
+        conn.request("GET", "/i?" + urllib.parse.urlencode(params))
+        response = conn.getresponse()
+        conn.close()
+    except:
+        LOGGER.debug("Collection request failed")
