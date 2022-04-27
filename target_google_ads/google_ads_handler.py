@@ -32,7 +32,7 @@ class GoogleAdsHandler:
             "client_id": self.oauth_client_id,
             "client_secret": self.oauth_client_secret,
             "refresh_token": self.refresh_token,
-            "validate_only": True,
+            #"validate_only": True,
         }
 
         client = GoogleAdsClient.load_from_dict(config_dict=CONFIG, version=self.api_version)
