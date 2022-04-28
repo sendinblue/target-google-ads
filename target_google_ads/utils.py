@@ -1,10 +1,9 @@
+import decimal
 import http
 import json
 import math
-import os
 import sys
 import urllib
-from decimal import Decimal
 
 import pkg_resources
 import singer
@@ -29,7 +28,7 @@ def decimal_to_float(value):
     Walk the given data structure and turn all instances of double
     into float.
     """
-    if isinstance(value, Decimal):
+    if isinstance(value, decimal):
         return float(str(value))
     if isinstance(value, list):
         return [decimal_to_float(child) for child in value]
@@ -52,7 +51,7 @@ def numeric_schema_with_precision(schema):
 
 
 def get_precision(key, schema):
-    v = abs(Decimal(schema.get(key, 1))).log10()
+    v = abs(decimal(schema.get(key, 1))).log10()
     if v < 0:
         return round(math.floor(v))
     return round(math.ceil(v))
