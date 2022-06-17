@@ -52,7 +52,7 @@ jobs:
         echo "$TARGET_CONFIG" > "sandbox/target-config.json"
         
         pip install -r requirements.txt
-        pytest --verbose
+        pytest test/unit/ --verbose
 
         shred --iterations=7 sandbox/*
         rm --recursive --force sandbox

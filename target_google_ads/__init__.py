@@ -19,39 +19,28 @@ REQUIRED_CONFIG_KEYS = [
     "oauth_client_id",
     "oauth_client_secret",
     "refresh_token",
-    "customer_ids",
+    "customer_id",
+    "conversions_id",
     "developer_token",
     "api_version",
     "offline_conversion",
 ]
 
 
-def check_mandatory_config(config: dict) -> bool:
-
-    for customer_id in config["customer_ids"]:
-        if "conversion_action_ids" not in customer_id:
-            raise Exception(f"A conversion_action_ids field is missing for {customer_id} in customer_ids config.")
-        elif "customer_id" not in customer_id:
-            raise Exception(f"A customer_id field is missing for {customer_id} in customer_ids config.")
-
-    return True
-
-
 def main_impl(config):
     LOGGER.info(f"Checking required config.")
     singer.utils.check_config(config, REQUIRED_CONFIG_KEYS)
 
-    customers = config["customer_ids"]
+    conversion = config["conversions_id"]
     conversion_handler = getattr(
         google_ads_offline_conversion, config["offline_conversion"]
     )
 
     LOGGER.info(f"Sync writing to google-ads api {config['api_version']} version.")
     tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-    for customer in customers:
-        LOGGER.debug(f"Customer config : {customers}")
-        client = GoogleAdsHandler(config)
-        state = client.writes_messages(customer=customer, tap_stream=tap_stream, conversion_handler=conversion_handler)
+    LOGGER.debug(f"Customer config : {conversion}")
+    client = GoogleAdsHandler(config)
+    state = client.writes_messages(config=config, tap_stream=tap_stream, conversion_handler=conversion_handler)
     # write a state file
     emit_state(state)
 

@@ -39,16 +39,16 @@ class GoogleAdsHandler:
 
         return client
 
-    def send_data(self, customer: dict, data: list) -> None:
+    def send_data(self, config: dict, data: list) -> None:
         """
         Send data to google ads API
-        :param customer: Dictionary of customer
+        :param config: Dictionary of config
         :param data: List of click conversions
         :return: conversion response
         """
         conversion_upload_service = self.client.get_service("ConversionUploadService")
         request = self.client.get_type("UploadClickConversionsRequest")
-        request.customer_id = str(customer["customer_id"])
+        request.customer_id = str(config["customer_id"])
         request.conversions.extend(data)
         request.partial_failure = True
         conversion_upload_response = conversion_upload_service.upload_click_conversions(
@@ -57,19 +57,11 @@ class GoogleAdsHandler:
 
         print_results(self.client, conversion_upload_response)
 
-    def check_conversion_id(self, customer: dict, message: dict) -> bool:
-        if "conversion_action_id" not in message:
-            raise Exception(f"A conversion_action_id field is missing for {message} in config.")
-        elif message["conversion_action_id"] not in customer["conversion_action_ids"]:
-            LOGGER.warning(f"A conversion_action_id for {message} is not in conversion_action_ids config")
-            return False
-        return True
-
-    def writes_messages(self, customer: dict, tap_stream, conversion_handler):
+    def writes_messages(self, config: dict, tap_stream, conversion_handler):
         """
         For every line in tap_stream:
             - parses JSON
-        :param customer: Customer id config
+        :param config: dict of config
         :param tap_stream: Inputs messages
         :param conversion_handler:
         :return:
@@ -98,18 +90,17 @@ class GoogleAdsHandler:
                 schema = decimal_to_float(schemas[stream])
 
                 msg = message.record
-                if self.check_conversion_id(customer, msg):
-                    # Validate record
-                    validators[stream].validate(decimal_to_float(msg))
+                # Validate record
+                validators[stream].validate(decimal_to_float(msg))
 
-                    # Get the record from message
-                    record = conversion_handler(self.client, customer, msg)
+                # Get the record from message
+                record = conversion_handler(self.client, config, msg)
 
-                    # Send data to REST server
-                    data.append(record)
-                    if len(data) >= self.batch_size:
-                        self.send_data(customer, data)
-                        data = []
+                # Send data to REST server
+                data.append(record)
+                if len(data) >= self.batch_size:
+                    self.send_data(config, data)
+                    data = []
 
                 state = None
 
@@ -131,6 +122,6 @@ class GoogleAdsHandler:
                 )
 
         if len(data) > 0:
-            self.send_data(customer, data)
+            self.send_data(config, data)
 
         return state

@@ -5,11 +5,11 @@ def dummy_conversion(msg):
     return msg
 
 
-def click_conversions(client, customer, message):
+def click_conversions(client, config, message):
     """
     Build a click conversion
     :param client: Google Ads Api client
-    :param customer: Dictionary of Google Ads Account Id & Converion Action Id
+    :param config: Dictionary of Google Ads Account Id & Converion Action Id
     :param message: Conversion message in json format
     :return: click conversion
     """
@@ -18,7 +18,7 @@ def click_conversions(client, customer, message):
     conversion_action_service = client.get_service("ConversionActionService")
     click_conversion.conversion_action = (
         conversion_action_service.conversion_action_path(
-            customer["customer_id"], message["conversion_action_id"]
+            config["customer_id"], config["conversion_action_id"]
         )
     )
 
