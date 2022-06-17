@@ -87,7 +87,7 @@ class GoogleAdsHandler:
                     raise Exception(f"A record for stream {stream} was encountered before a corresponding schema")
 
                 # Get schema for this record's stream
-                schema = decimal_to_float(schemas[stream])
+                #schema = decimal_to_float(schemas[stream])
 
                 msg = message.record
                 # Validate record

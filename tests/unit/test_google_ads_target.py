@@ -42,21 +42,6 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
             count_lines += 1
         self.assertEqual(2, count_lines, msg="Count number inputs")
 
-    def test_check_conversion_id_in_config(self):
-        from target_google_ads import parse_config, check_mandatory_config
-
-        self.init_config('simple_stream.json', 'target-config.json')
-        config = parse_config()
-        self.assertTrue(check_mandatory_config(config))
-
-    def test_check_conversion_id_not_in_config(self):
-        from target_google_ads import parse_config, check_mandatory_config
-
-        self.init_config('simple_stream.json', 'error-config.json')
-        config = parse_config()
-        with self.assertRaises(Exception):
-            check_mandatory_config(config)
-
     def test_check_conversion_id_in_message(self):
         import io
         import sys
@@ -69,24 +54,8 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
         client = GoogleAdsHandler(config)
 
         tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-        for customer in config["customer_ids"]:
-            for line in tap_stream:
-                message = singer.parse_message(line)
-                self.assertTrue(client.check_conversion_id(customer, message.record))
+        for line in tap_stream:
+            message = singer.parse_message(line)
+            self.assertTrue(client.check_conversion_id(config, message.record))
 
-    def test_check_conversion_id_not_in_message(self):
-        import io
-        import sys
-        import singer
-        from target_google_ads import parse_config
-        from target_google_ads.google_ads_handler import GoogleAdsHandler
 
-        self.init_config('simple_stream.json', 'integration-config.json')
-        config = parse_config()
-        client = GoogleAdsHandler(config)
-
-        tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-        for customer in config["customer_ids"]:
-            for line in tap_stream:
-                message = singer.parse_message(line)
-                self.assertFalse(client.check_conversion_id(customer, message.record))

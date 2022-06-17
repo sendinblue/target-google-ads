@@ -28,7 +28,7 @@ def decimal_to_float(value):
     Walk the given data structure and turn all instances of double
     into float.
     """
-    if isinstance(value, decimal):
+    if isinstance(value, decimal.Decimal):
         return float(str(value))
     if isinstance(value, list):
         return [decimal_to_float(child) for child in value]

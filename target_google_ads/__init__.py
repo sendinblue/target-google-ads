@@ -20,7 +20,7 @@ REQUIRED_CONFIG_KEYS = [
     "oauth_client_secret",
     "refresh_token",
     "customer_id",
-    "conversions_id",
+    "conversion_id",
     "developer_token",
     "api_version",
     "offline_conversion",
@@ -31,7 +31,7 @@ def main_impl(config):
     LOGGER.info(f"Checking required config.")
     singer.utils.check_config(config, REQUIRED_CONFIG_KEYS)
 
-    conversion = config["conversions_id"]
+    conversion = config["conversion_id"]
     conversion_handler = getattr(
         google_ads_offline_conversion, config["offline_conversion"]
     )

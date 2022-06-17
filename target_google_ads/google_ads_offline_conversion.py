@@ -18,7 +18,7 @@ def click_conversions(client, config, message):
     conversion_action_service = client.get_service("ConversionActionService")
     click_conversion.conversion_action = (
         conversion_action_service.conversion_action_path(
-            config["customer_id"], config["conversion_action_id"]
+            config["customer_id"], config["conversion_id"]
         )
     )
 
