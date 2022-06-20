@@ -28,7 +28,7 @@ REQUIRED_CONFIG_KEYS = [
 
 
 def main_impl(config):
-    LOGGER.info(f"Checking required config.")
+    LOGGER.info("Checking required config.")
     singer.utils.check_config(config, REQUIRED_CONFIG_KEYS)
 
     conversion = config["conversion_id"]

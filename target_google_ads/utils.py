@@ -92,7 +92,7 @@ def send_usage_stats():
             "se_la": version,
         }
         conn.request("GET", "/i?" + urllib.parse.urlencode(params))
-        response = conn.getresponse()
+        conn.getresponse()
         conn.close()
-    except:
+    except Exception:
         LOGGER.debug("Collection request failed")

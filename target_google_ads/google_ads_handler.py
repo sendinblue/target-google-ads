@@ -32,7 +32,7 @@ class GoogleAdsHandler:
             "client_id": self.oauth_client_id,
             "client_secret": self.oauth_client_secret,
             "refresh_token": self.refresh_token,
-            #"validate_only": True,
+            # "validate_only": True,
         }
 
         client = GoogleAdsClient.load_from_dict(config_dict=CONFIG, version=self.api_version)
@@ -87,7 +87,7 @@ class GoogleAdsHandler:
                     raise Exception(f"A record for stream {stream} was encountered before a corresponding schema")
 
                 # Get schema for this record's stream
-                #schema = decimal_to_float(schemas[stream])
+                # schema = decimal_to_float(schemas[stream])
 
                 msg = message.record
                 # Validate record

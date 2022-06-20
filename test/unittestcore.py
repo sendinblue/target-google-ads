@@ -32,9 +32,8 @@ class BaseUnitTest(unittest.TestCase):
         sys.argv[1:] = arg
 
         if "config" in kwargs:
-            c = None
             with open(kwargs["config"], "r") as f:
-                c = json.load(f)
+                json.load(f)
 
     def init_config(self, data_file_name, config_file_name):
         self.set_cli_args(

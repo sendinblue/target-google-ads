@@ -29,7 +29,7 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
         from target_google_ads import parse_config
 
         self.init_config('simple_stream.json', 'target-config.json')
-        ret = parse_config()
+        parse_config()
 
         tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
         count_lines = 0
@@ -57,5 +57,3 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
         for line in tap_stream:
             message = singer.parse_message(line)
             self.assertTrue(client.check_conversion_id(config, message.record))
-
-
