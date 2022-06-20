@@ -14,7 +14,7 @@ setup(
         "singer-python==5.12.2",
         "requests==2.26.0",
         "backoff==1.8.0",
-        "google-ads==15.0.0",
+        "google-ads==16.0.0",
         "protobuf==3.17.3",
     ],
     extras_require={
@@ -26,5 +26,5 @@ setup(
           [console_scripts]
           target-google-ads=target_google_ads:main
       """,
-    packages=["tap_google_ads"],
+    packages=["target_google_ads"],
 )

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "target-google-ads"
 version = "1.0.1"
-description = ""
+description = "A Singer (https://singer.io) target that writes data to Google Ads."
 authors = ["Deke Li <deke.li@sendinblue.com>"]
 
 [tool.poetry.dependencies]

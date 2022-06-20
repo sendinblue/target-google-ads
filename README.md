@@ -27,7 +27,7 @@ Install requirements, using either of the two methods below.
 
 **Method 1**
 ```
-pip install -r requirements.txt 
+poetry install 
 ```
 
 **Method 2**
@@ -35,12 +35,6 @@ pip install -r requirements.txt
 Alternatively, you can run the following command. It runs *setup.py* and installs target-bigquery into the env like the user would. **-e** emulates how a user of the package would install requirements.
 ```
 pip install -e .
-```
-**Additional development and testing requirements**
-
-Install additional dependencies required for development and testing. 
-```
-pip install -r dev-requirements.txt
 ```
 
 ## How to use it
