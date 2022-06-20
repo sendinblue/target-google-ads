@@ -53,6 +53,6 @@ jobs:
     - name: Test with pytest
       run: |
         echo "$TARGET_CONFIG" > "sandbox/target-config.json"
-        poetry run pytest test/unit/ --verbose
+        # poetry run pytest test/unit/ --verbose
         shred --iterations=7 sandbox/*
         rm --recursive --force sandbox
