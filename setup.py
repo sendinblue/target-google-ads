@@ -2,26 +2,20 @@
 
 from setuptools import setup
 
+install_requires = open("requirements.txt").read().strip().split("\n")
+dev_requires = open("dev-requirements.txt").read().strip().split("\n")
+extras = {"dev": dev_requires}
+
 setup(
     name="target-google-ads",
-    version="0.0.1",
+    version="1.0.3",
     description="Singer.io target for writing data to Google Ads API",
     author="lideke",
-    url="https://singer.io",
+    url="https://github.com/DTSL/target-google-ads",
     classifiers=["Programming Language :: Python :: 3 :: Only"],
     py_modules=["target_google_ads"],
-    install_requires=[
-        "singer-python==5.12.2",
-        "requests==2.26.0",
-        "backoff==1.8.0",
-        "google-ads==16.0.0",
-        "protobuf==3.17.3",
-    ],
-    extras_require={
-        "dev": [
-            "pylint",
-        ]
-    },
+    install_requires=install_requires,
+    extras_require=extras,
     entry_points="""
           [console_scripts]
           target-google-ads=target_google_ads:main
