@@ -1,4 +1,4 @@
-from tests import unittestcore
+from test import unittestcore
 
 
 class TestSimpleStream(unittestcore.BaseUnitTest):
