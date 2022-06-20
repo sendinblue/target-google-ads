@@ -7,7 +7,7 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
 
         self.init_config('simple_stream.json',  'target-config.json')
         ret = parse_config()
-        self.assertEqual(7, len(ret), msg="Count number of config fields")
+        self.assertEqual(8, len(ret), msg="Count number of config fields")
         self.assertEqual("v10", ret["api_version"], msg="Google Ads Api version")
 
     def test_offline_conversion(self):
@@ -41,19 +41,3 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
             self.assertTrue(record["user_id"] in [4378219, 4378361])
             count_lines += 1
         self.assertEqual(2, count_lines, msg="Count number inputs")
-
-    def test_check_conversion_id_in_message(self):
-        import io
-        import sys
-        import singer
-        from target_google_ads import parse_config
-        from target_google_ads.google_ads_handler import GoogleAdsHandler
-
-        self.init_config('combo_300_stream.json', 'integration-config.json')
-        config = parse_config()
-        client = GoogleAdsHandler(config)
-
-        tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-        for line in tap_stream:
-            message = singer.parse_message(line)
-            self.assertTrue(client.check_conversion_id(config, message.record))

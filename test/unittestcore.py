@@ -38,7 +38,7 @@ class BaseUnitTest(unittest.TestCase):
     def init_config(self, data_file_name, config_file_name):
         self.set_cli_args(
             stdin=os.path.join(os.path.join(
-                os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests'),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'test'),
                 'data'), data_file_name),
             config=os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'sandbox'),
                                 config_file_name)
