@@ -1,4 +1,4 @@
-from test import unittestcore
+from tests import unittestcore
 import unittest
 
 
