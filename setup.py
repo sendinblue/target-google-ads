@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from setuptools import setup
 
 install_requires = open("requirements.txt").read().strip().split("\n")
@@ -13,12 +12,11 @@ setup(
     author="lideke",
     url="https://github.com/DTSL/target-google-ads",
     classifiers=["Programming Language :: Python :: 3 :: Only"],
-    py_modules=["target_google_ads"],
+    packages=["target_google_ads"],
     install_requires=install_requires,
     extras_require=extras,
     entry_points="""
           [console_scripts]
           target-google-ads=target_google_ads:main
-      """,
-    packages=["target_google_ads"],
+      """
 )
