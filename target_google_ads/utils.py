@@ -4,6 +4,7 @@ import json
 import math
 import sys
 import urllib
+from datetime import datetime
 
 import pkg_resources
 import singer
@@ -96,3 +97,14 @@ def send_usage_stats():
         conn.close()
     except Exception:
         LOGGER.debug("Collection request failed")
+
+
+def datetime_to_ads_format(conversion_date):
+    conversion_datetime = datetime.strptime(conversion_date, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d %H:%M:%S%z")
+
+    timestamp_string = "{0}:{1}".format(
+        conversion_datetime[:-2],
+        conversion_datetime[-2:]
+    )
+
+    return timestamp_string
