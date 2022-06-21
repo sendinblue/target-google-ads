@@ -38,6 +38,5 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
             self.assertTrue(isinstance(message, singer.RecordMessage))
             self.assertEqual("simple_stream", message.stream)
             record = message.record
-            self.assertTrue(record["user_id"] in [4378219, 4378361])
             count_lines += 1
         self.assertEqual(2, count_lines, msg="Count number inputs")

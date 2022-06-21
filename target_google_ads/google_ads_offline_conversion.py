@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from target_google_ads.utils import decimal_to_float
 
 
@@ -36,7 +38,7 @@ def click_conversions(client, config, message):
         click_conversion.wbraid = message["wbraid"]
 
     click_conversion.conversion_value = decimal_to_float(message["conversion_value"])
-    click_conversion.conversion_date_time = message["conversion_date_time"]
+    click_conversion.conversion_date_time = datetime.strptime(message["conversion_date_time"], "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d %H:%M:%S%z")
     click_conversion.currency_code = (
         message["currency_code"] if message["currency_code"] else "US"
     )
