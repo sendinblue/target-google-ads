@@ -13,7 +13,7 @@ from target_google_ads.google_ads_handler import GoogleAdsHandler
 from target_google_ads.utils import emit_state, send_usage_stats
 
 LOGGER = singer.get_logger()
-API_VERSION = "v15"
+API_VERSION = "v13"
 
 REQUIRED_CONFIG_KEYS = [
     "oauth_client_id",
