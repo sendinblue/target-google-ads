@@ -11,12 +11,12 @@ LOGGER = singer.get_logger()
 
 
 class GoogleAdsHandler:
-    def __init__(self, config):
+    def __init__(self, config, api_version):
         self.developer_token = config["developer_token"]
         self.oauth_client_id = config["oauth_client_id"]
         self.oauth_client_secret = config["oauth_client_secret"]
         self.refresh_token = config["refresh_token"]
-        self.api_version = config["api_version"]
+        self.api_version = api_version
 
         self.batch_size = 500
         self.client = self.__get_client()

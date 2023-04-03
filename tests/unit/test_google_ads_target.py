@@ -8,7 +8,6 @@ class TestSimpleStream(unittestcore.BaseUnitTest):
         self.init_config('simple_stream.json',  'target-config.json')
         ret = parse_config()
         self.assertEqual(8, len(ret), msg="Count number of config fields")
-        self.assertEqual("v10", ret["api_version"], msg="Google Ads Api version")
 
     def test_offline_conversion(self):
         import target_google_ads.google_ads_offline_conversion

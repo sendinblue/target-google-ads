@@ -13,7 +13,7 @@ from target_google_ads.google_ads_handler import GoogleAdsHandler
 from target_google_ads.utils import emit_state, send_usage_stats
 
 LOGGER = singer.get_logger()
-
+API_VERSION = "v15"
 
 REQUIRED_CONFIG_KEYS = [
     "oauth_client_id",
@@ -22,7 +22,6 @@ REQUIRED_CONFIG_KEYS = [
     "customer_id",
     "conversion_id",
     "developer_token",
-    "api_version",
     "offline_conversion",
 ]
 
@@ -36,10 +35,10 @@ def main_impl(config):
         google_ads_offline_conversion, config["offline_conversion"]
     )
 
-    LOGGER.info(f"Sync writing to google-ads api {config['api_version']} version.")
+    LOGGER.info(f"Sync writing to google-ads api {API_VERSION} version.")
     tap_stream = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
     LOGGER.debug(f"Customer config : {conversion}")
-    client = GoogleAdsHandler(config)
+    client = GoogleAdsHandler(config, API_VERSION)
     state = client.writes_messages(config=config, tap_stream=tap_stream, conversion_handler=conversion_handler)
     # write a state file
     emit_state(state)

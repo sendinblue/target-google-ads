@@ -50,7 +50,6 @@ Add the following files to *sandbox* directory under project root directory:
     "oauth_client_id": "fqdsF342-sfqsdfeaa32432.apps.googleusercontent.com",
     "oauth_client_secret": "DSFRT4RDFGesfzer",
     "refresh_token": "1//03AumSAfqsdfqsf-qsdfqsdfrzetgb-f-dqfqsdfze-thgf-dqsfdfh-37A",
-    "api_version": "v10",
     "customerId": 23456434, 
     "conversion_id": 2345325535,
     "offline_conversion": "dummy_conversion"
