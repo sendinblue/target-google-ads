@@ -1,8 +1,7 @@
 singer-python==5.13.0
 requests==2.28.2
-backoff==2.2.1
 google-ads==21.0.0
 protobuf==4.22.1
 
 setuptools==67.6.1
-jsonschema==4.17.3
+jsonschema==2.6.0
