@@ -2,5 +2,5 @@ singer-python==5.13.0
 requests==2.31.0
 google-ads==23.0.0
 setuptools==67.6.1
-jsonschema==4.20.0
-numpy==1.24.4
+jsonschema==2.6.0
+numpy==1.21.0
