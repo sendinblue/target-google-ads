@@ -20,6 +20,11 @@ def get_base_conversions(client, config, message):
         message["currency_code"] if message["currency_code"] else "US"
     )
 
+    if "ad_user_data_consent" in message:
+        click_conversion.consent.ad_user_data = client.enums.ConsentStatusEnum[
+            message["ad_user_data_consent"]
+        ]
+
     return click_conversion
 
 
