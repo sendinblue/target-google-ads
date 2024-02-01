@@ -8,7 +8,7 @@ extras = {"dev": dev_requires}
 
 setup(
     name="target-google-ads",
-    version="1.0.3",
+    version="2.1.3",
     description="Singer.io target for writing data to Google Ads API",
     author="lideke",
     url="https://github.com/DTSL/target-google-ads",
